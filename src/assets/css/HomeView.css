@@ -1,0 +1,61 @@
+.HomeCard {
+    flex: 1;
+    background-color: #222 !important;
+    padding: 35px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.card {
+    box-shadow: 5px 5px 10px 5px rgb(0, 0, 0, 0.2);
+}
+.card-body {
+    display: flex;
+    width: 100%;
+}
+
+.cardText {
+    justify-content: flex-start;
+    align-content: center;
+    display: flex;
+    flex: 1;
+}
+
+.cardText p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 18px;
+}
+
+.cardBtn {
+    align-items: center;
+    justify-content: flex-end;
+    display: flex;
+    flex: 1;
+    
+}
+
+.cardBtn button {
+    border: none;
+    outline: none;
+    width: 200px;
+    height: 40px;
+    border-radius: 2px;
+    background-color: #038d88;
+    box-shadow: 5px 5px 10px 5px rgb(0, 0, 0, 0.2);
+}
+.cardBtn button a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    color: #EEE;
+    text-decoration: none;
+}
+.cardBtn button:hover {
+    background-color: #03a9a9;
+}
