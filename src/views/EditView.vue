@@ -114,7 +114,10 @@
                 placeholder="Ex: Curso voltado para .........."
                 v-model="descriptionCourseEdit"
                 :disabled="isCourseSelected"
+                @input="updateCharCount('descriptionCourseEdit')"
+                maxlength="255"
               />
+              <p>{{charCourseEdit}}/{{maxLengthCourseEdit}}</p>
             </div>
             <div class="Course">
               <label for="Author">Autor do curso</label>
@@ -198,7 +201,10 @@
                 placeholder="Ex: Essa aula fala sobre..........."
                 v-model="informationLessonsEdit"
                 :disabled="isLessonsSelected"
+                @input="updateCharCount('informationLessonsEdit')"
+                maxlength="2000"
               />
+              <p>{{charLessonsEdit}}/{{maxLengthLessonsEdit}}</p>
             </div>
             <div class="Course">
               <label for="Author">Número da aula</label>
@@ -264,6 +270,12 @@ export default {
       categoryNameEdit: null,
       coursesEdit: [],
       lessonsEdit: [],
+      courseDescriptionEdit: '',
+      charCourseEdit: 0,
+      maxLengthCourseEdit: 255,
+      lessonsInformationEdit: '',
+      charLessonsEdit: 0,
+      maxLengthLessonsEdit: 2000
     };
   },
   computed: {
@@ -277,12 +289,36 @@ export default {
       return this.lessonFormSelectEdit === 0;
     },
   },
+  watch: {
+    descriptionCourseEdit(newVal) {
+      this.charCourseEdit = newVal.length;
+    },
+    informationLessonsEdit(newVal) {
+      this.charLessonsEdit = newVal.length;
+    }
+  },
   mounted() {
     this.buscarCategoriasEdit();
     this.buscarCursosEdit();
     this.buscarLessonsEdit();
   },
   methods: {
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    },
+    updateCharCount(field) {
+      if (field === 'descriptionCourseEdit') {
+        if (this.descriptionCourseEdit.length > this.maxLengthCourseEdit) {
+          this.descriptionCourseEdit = this.descriptionCourseEdit.substring(0, this.maxLengthCourseEdit);
+        }
+      } else if (field === 'informationLessonsEdit') {
+        if (this.informationLessonsEdit.length > this.maxLengthLessonsEdit) {
+          this.informationLessonsEdit = this.informationLessonsEdit.substring(0, this.maxLengthLessonsEdit);
+        }
+      }
+    },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -304,14 +340,16 @@ export default {
     },
     async submitButtonCategoriesEdit() {
       try {
-        // const token = this.getCookie('token');
+        const token = this.getCookie("token");
         document.getElementById("nameCategoryEdit").disabled = true;
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        
+        // const token = localStorage.getItem("token");
         const data = {
           name: this.categoryNameEdit,
         };
         const id = this.selectFormEdit;
+        
         const response = await axios.put(`${apiUrl}/categories/${id}`, data, {
           headers: { Authorization: "Bearer " + token },
         });
@@ -353,14 +391,14 @@ export default {
       }
     },
     async submitButtonCoursesEdit() {
-      // const token = this.getCookie("token");
       try {
         const inputCourseEdit = document.querySelectorAll(".inputCourseEdit");
         inputCourseEdit.forEach((inputCoursesEdit) => {
           inputCoursesEdit.disabled = true;
         });
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        const token = this.getCookie("token");
+        // const token = localStorage.getItem("token");
 
         const idCourse = this.selectedCourseEdit;
         const data = {
@@ -368,7 +406,7 @@ export default {
           description: this.descriptionCourseEdit,
           author: this.authorCourseEdit,
         };
-
+        
         const response = await axios.put(`${apiUrl}/courses/${idCourse}`, data, {
           headers: {
             Authorization: "Bearer " + token,
@@ -417,21 +455,22 @@ export default {
       }
     },
     async submitButtonLessonsEdit() {
-      // const token = this.getCookie('token');
+      
       try {
         const inputLessonEdit = document.querySelectorAll(".inputLessonEdit");
         inputLessonEdit.forEach((inputLessonsEdit) => {
           inputLessonsEdit.disabled = true;
         });
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        const token = this.getCookie("token");
+        // const token = localStorage.getItem("token");
         const idLessons = this.lessonFormSelectEdit;
         const data = {
           name: this.nameLessonsEdit,
           information: this.informationLessonsEdit,
           sequence: this.sequenceLessonsEdit,
         };
-
+        
         const response = await axios.put(`${apiUrl}/lessons/${idLessons}`, data, {
           headers: {
             Authorization: "Bearer " + token,
@@ -482,8 +521,8 @@ export default {
 
     async buscarCategoriasEdit() {
       var apiUrl = this.$apiUrl;
-      const token = localStorage.getItem("token");
-      // const token = this.getCookie('token');
+      // const token = localStorage.getItem("token");
+      const token = this.getCookie('token');
       if (!token) {
         console.error("Token não encontrado");
         return;
@@ -499,9 +538,9 @@ export default {
       }
     },
     async buscarCursosEdit() {
-      // const token = this.getCookie('token');
+      const token = this.getCookie('token');
       var apiUrl = this.$apiUrl;
-      const token = localStorage.getItem("token");
+      // const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token não encontrado");
         return;
@@ -532,9 +571,9 @@ export default {
       }
     },
     async buscarLessonsEdit() {
-      // const token = this.getCookie('token');
+      const token = this.getCookie('token');
       var apiUrl = this.$apiUrl;
-      const token = localStorage.getItem("token");
+      // const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token não encontrado");
         return;

@@ -3,6 +3,13 @@
     <AppNavbar />
     <div class="cardTable">
       <table class="dataTable">
+        <ConfirmationModal
+          v-if="isModalVisible"
+          :isVisible="isModalVisible"
+          message="Você tem certeza que deseja deletar esta aula?"
+          @confirm="deleteLesson"
+          @cancel="hideModal"
+        />
         <thead>
           <tr>
             <th>Nome do Curso</th>
@@ -13,7 +20,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="lesson in paginatedAulas" :key="lesson.id">
+          <tr v-for="lesson in paginatedAulas()" :key="lesson.id">
             <td>{{ lesson.courseName }}</td>
             <td>{{ lesson.name }}</td>
             <td>{{ lesson.sequence }}</td>
@@ -27,21 +34,24 @@
                   style="font-size: 12px; margin-left: 3px"
                 />
               </router-link>
-              <router-link to="/" class="deleteBtn"
-                >Deletar
+              <button @click="showModal(lesson.id)" :id="lesson.id" class="deleteBtn">
+                Deletar
                 <font-awesome-icon
                   :icon="['fas', 'trash']"
                   class="iconSideBar"
                   style="font-size: 12px; margin-left: 3px"
-              /></router-link>
+                />
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
       <div id="pagination">
-        <button @click="previousPage">Anterior</button>
-        <span>Página {{ currentPage }} de {{ totalPages }}</span>
-        <button @click="nextPage">Próxima</button>
+        <button @click="previousPage" :disabled="currentPage === 1">Anterior</button>
+        <span>Página {{ currentPage }} de {{ totalPages() }}</span>
+        <button @click="nextPage" :disabled="currentPage === totalPages()">
+          Próxima
+        </button>
       </div>
     </div>
   </AppTemplate>
@@ -53,22 +63,32 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import AppNavbar from "@/components/AppNavbar.vue";
 import AppTemplate from "./templates/AppTemplate.vue";
 import axios from "axios";
+import ConfirmationModal from "../components/popUp.vue";
 
 export default {
   name: "TableView",
   components: {
+    ConfirmationModal,
     AppNavbar,
     FontAwesomeIcon,
     AppTemplate,
   },
   data() {
     return {
+      isModalVisible: false,
       lessons: [],
-      currentPage: 1,
       itemsPerPage: 5,
+      currentPage: 1,
+      lessonID: null,
     };
   },
-  computed: {
+  computed: {},
+  methods: {
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    },
     totalPages() {
       return Math.ceil(this.lessons.length / this.itemsPerPage);
     },
@@ -77,12 +97,20 @@ export default {
       const end = start + this.itemsPerPage;
       return this.lessons.slice(start, end);
     },
-  },
-  methods: {
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages()) {
+        this.currentPage++;
+      }
+    },
     async fetchData() {
       try {
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        const token = this.getCookie("token");
 
         // Fetch lessons
         const lessonsResponse = await axios.get(`${apiUrl}/lessons`, {
@@ -113,7 +141,32 @@ export default {
         console.error("Error fetching data:", error);
       }
     },
+    showModal(id) {
+      this.lessonID = id;
+      this.isModalVisible = true;
+    },
+    hideModal() {
+      this.isModalVisible = false;
+    },
+    async deleteLesson() {
+      var apiUrl = this.$apiUrl;
+      const token = this.getCookie("token");
+      try {
+        await axios.delete(`${apiUrl}/lessons/${this.lessonID}`, {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        this.hideModal();
+        this.lessons = this.lessons.filter((lesson) => lesson.id !== this.lessonID);
+      } catch (error) {
+        console.error("Erro ao deletar a aula:", error);
+        alert("Falha ao deletar a aula.");
+        this.hideModal();
+      }
+      this.hideModal();
+    },
   },
+
   mounted() {
     this.fetchData();
   },

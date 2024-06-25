@@ -268,6 +268,11 @@ export default {
     this.buscarCursos();
   },
   methods: {
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    },
     updateCharCount(field) {
       if (field === "descriptionCourse") {
         if (this.descriptionCourse.length > this.maxLengthCourse) {
@@ -293,7 +298,7 @@ export default {
       try {
         document.getElementById("nameCategory").disabled = true;
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        const token = this.getCookie("token");
         const data = {
           name: this.categoryName,
           active: 1,
@@ -356,7 +361,7 @@ export default {
           inputCourses.disabled = true;
         });
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        const token = this.getCookie("token");
         const formData = new FormData();
         formData.append("category_id", this.selectForm);
         formData.append("name", this.nameCourse);
@@ -426,7 +431,7 @@ export default {
           inputLessons.disabled = true;
         });
         var apiUrl = this.$apiUrl;
-        const token = localStorage.getItem("token");
+        const token = this.getCookie("token");
         const formData = new FormData();
         formData.append("course_id", this.selectedCourse);
         formData.append("name", this.nameLessons);
@@ -494,7 +499,7 @@ export default {
     async buscarCategorias() {
       var apiUrl = this.$apiUrl;
       // const token = this.getCookie('token');
-      const token = localStorage.getItem("token");
+      const token = this.getCookie("token");
       if (!token) {
         console.error("Token não encontrado");
         return;
@@ -512,7 +517,7 @@ export default {
     async buscarCursos() {
       // const token = this.getCookie('token');
       var apiUrl = this.$apiUrl;
-      const token = localStorage.getItem("token");
+      const token = this.getCookie("token");
       if (!token) {
         console.error("Token não encontrado");
         return;

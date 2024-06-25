@@ -3,10 +3,16 @@ import HomeView from '../views/HomeView.vue'
 import Create from '../views/CreateView.vue'
 import Edit from '../views/EditView.vue'
 import TableView from '../views/TableView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const routes = [
   {
     path: '/',
+    name: 'login',
+    component: LoginView
+  },
+  {
+    path: '/home',
     name: 'home',
     component: HomeView
   },
