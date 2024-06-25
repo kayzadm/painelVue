@@ -88,7 +88,10 @@
                 placeholder="Ex: Curso voltado para .........."
                 v-model="descriptionCourse"
                 :disabled="isCourseSelected"
+                @input="updateCharCount('descriptionCourse')"
+                maxlength="255"
               />
+              <p>{{charCourse}}/{{maxLengthCourse}}</p>
             </div>
             <div class="Course">
               <label for="Author">Autor do curso</label>
@@ -168,7 +171,10 @@
                 placeholder="Ex: Essa aula fala sobre..........."
                 v-model="lessonsInformation"
                 :disabled="isLessonSelected"
+                @input="updateCharCount('informationLessons')"
+                maxlength="2000"
               />
+              <p>{{charLessons}}/{{maxLengthLessons}}</p>
             </div>
             <div class="Course">
               <label for="Author">Número da aula</label>
@@ -234,6 +240,11 @@ export default {
       nameLessons: null,
       lessonsInformation: null,
       sequenceLessons: null,
+      courseDescription: "",
+      charCourse: 0,
+      maxLengthCourse: 255,
+      charLessons: 0,
+      maxLengthLessons: 2000,
     };
   },
   computed: {
@@ -244,11 +255,36 @@ export default {
       return this.selectedCourse === 0;
     },
   },
+  watch: {
+    descriptionCourse(newVal) {
+      this.charCourse = newVal.length;
+    },
+    lessonsInformation(newVal) {
+      this.charLessons = newVal.length;
+    },
+  },
   mounted() {
     this.buscarCategorias();
     this.buscarCursos();
   },
   methods: {
+    updateCharCount(field) {
+      if (field === "descriptionCourse") {
+        if (this.descriptionCourse.length > this.maxLengthCourse) {
+          this.descriptionCourse = this.descriptionCourse.substring(
+            0,
+            this.maxLengthCourse
+          );
+        }
+      } else if (field === "lessonsInformation") {
+        if (this.lessonsInformation.length > this.maxLengthLessons) {
+          this.lessonsInformation = this.lessonsInformation.substring(
+            0,
+            this.maxLengthLessons
+          );
+        }
+      }
+    },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },

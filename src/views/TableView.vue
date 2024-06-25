@@ -8,21 +8,32 @@
             <th>Nome do Curso</th>
             <th>Nome da Aula</th>
             <th>Número da Aula</th>
-            <th>Nome do Autor</th>
             <th>Descrição</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="aula in paginatedAulas" :key="aula.id">
-            <td>{{ aula.nomeCurso }}</td>
-            <td>{{ aula.nomeAula }}</td>
-            <td>{{ aula.numeroAula }}</td>
-            <td>{{ aula.nomeAutor }}</td>
-            <td>{{ aula.descricao }}</td>
+          <tr v-for="lesson in paginatedAulas" :key="lesson.id">
+            <td>{{ lesson.courseName }}</td>
+            <td>{{ lesson.name }}</td>
+            <td>{{ lesson.sequence }}</td>
+            <td>{{ lesson.information }}</td>
             <td>
-              <button @click="editarAula(aula.id)">Editar</button>
-              <button @click="deletarAula(aula.id)">Deletar</button>
+              <router-link to="/edit" class="editBtn"
+                >Editar
+                <font-awesome-icon
+                  :icon="['fas', 'pen']"
+                  class="iconSideBar"
+                  style="font-size: 12px; margin-left: 3px"
+                />
+              </router-link>
+              <router-link to="/" class="deleteBtn"
+                >Deletar
+                <font-awesome-icon
+                  :icon="['fas', 'trash']"
+                  class="iconSideBar"
+                  style="font-size: 12px; margin-left: 3px"
+              /></router-link>
             </td>
           </tr>
         </tbody>
@@ -38,59 +49,73 @@
 
 <script>
 // @ is an alias to /src
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import AppNavbar from "@/components/AppNavbar.vue";
 import AppTemplate from "./templates/AppTemplate.vue";
+import axios from "axios";
 
 export default {
   name: "TableView",
   components: {
     AppNavbar,
+    FontAwesomeIcon,
     AppTemplate,
   },
   data() {
     return {
-      aulas: [],
+      lessons: [],
       currentPage: 1,
       itemsPerPage: 5,
     };
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.aulas.length / this.itemsPerPage);
+      return Math.ceil(this.lessons.length / this.itemsPerPage);
     },
     paginatedAulas() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.aulas.slice(start, end);
+      return this.lessons.slice(start, end);
     },
   },
   methods: {
-    fetchAulas() {
-      fetch("/api/aulas")
-        .then((response) => response.json())
-        .then((data) => {
-          this.aulas = data;
+    async fetchData() {
+      try {
+        var apiUrl = this.$apiUrl;
+        const token = localStorage.getItem("token");
+
+        // Fetch lessons
+        const lessonsResponse = await axios.get(`${apiUrl}/lessons`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-    },
-    editarAula(id) {
-      console.log(`Editar aula com ID: ${id}`);
-    },
-    deletarAula(id) {
-      console.log(`Deletar aula com ID: ${id}`);
-    },
-    previousPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
+
+        const lessons = lessonsResponse.data.lessons; // Assumindo que lessonsResponse.data é um array de lições
+
+        // Fetch courses
+        const coursesResponse = await axios.get(`${apiUrl}/courses`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const courses = coursesResponse.data.courses; // Assumindo que coursesResponse.data é um array de cursos
+
+        // Map course names to lessons
+        const lessonsWithCourseName = lessons.map((lesson) => {
+          const course = courses.find((course) => course.id === lesson.course_id);
+
+          return {
+            ...lesson,
+            courseName: course ? course.name : "Unknown",
+          };
+        });
+
+        this.lessons = lessonsWithCourseName;
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     },
   },
   mounted() {
-    this.fetchAulas();
+    this.fetchData();
   },
 };
 </script>
