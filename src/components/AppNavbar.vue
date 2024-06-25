@@ -1,25 +1,24 @@
 <template>
   <ul class="Profile">
     <li class="dropdownProfile" @click="toggleDropdownProfile">
-      <a href="#" class="dropbtnProfile" >
-        <font-awesome-icon :icon="['fas', 'user']"/>
+      <a href="#" class="dropbtnProfile">
+        <font-awesome-icon :icon="['fas', 'user']" />
       </a>
-      <div v-if="isDropdownOpen" class="profileMenu   ">
+      <div v-if="isDropdownOpen" class="profileMenu">
         <!-- <div class="nameProfile">Leo</div> -->
         <a href="" class="optionProfile">
-          <font-awesome-icon :icon="['fas', 'user']"/>
+          <font-awesome-icon :icon="['fas', 'user']" />
           <span>Perfil</span>
         </a>
-        <hr>
+        <hr />
         <a href="" class="optionProfile text-danger">
-          <font-awesome-icon :icon="['fas', 'right-from-bracket']"/>
+          <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
           <span>Logout</span>
         </a>
       </div>
     </li>
   </ul>
   <nav :class="{ active: isActive }">
-    
     <div ref="sidebar" class="sidebar" :class="{ active: isActive }">
       <button class="menuBtn">
         <font-awesome-icon
@@ -32,7 +31,6 @@
         <img :src="logoSrc" alt="logo" :class="{ active: isActive }" />
       </div>
       <ul>
-        
         <li :class="{ LinkActive: Active(['/']) }">
           <router-link to="/" exact>
             <font-awesome-icon :icon="['fas', 'table']" class="iconSideBar" />
@@ -60,11 +58,12 @@
                 <span v-if="!isActive">Criar</span>
               </router-link>
             </li>
-            <li><router-link to="/edit">
-              <font-awesome-icon :icon="['fas', 'pen']" class="iconSideBar" />
-              <span v-if="!isActive">Editar</span>
-
-            </router-link></li>
+            <li>
+              <router-link to="/edit">
+                <font-awesome-icon :icon="['fas', 'pen']" class="iconSideBar" />
+                <span v-if="!isActive">Editar</span>
+              </router-link>
+            </li>
           </ul>
         </li>
         <li :class="{ LinkActive: Active(['/table']) }">
@@ -122,7 +121,6 @@ export default {
       this.dropdownActive = !this.dropdownActive;
       this.dropdownIcon =
         this.dropdownIcon === "caret-right" ? "caret-down" : "caret-right";
-      
     },
   },
 };

@@ -8,5 +8,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 library.add(fas);
 createApp(App).component('font-awesome-icon', FontAwesomeIcon);
+const app = createApp(App);
 
-createApp(App).use(router).mount('#app')
+app.config.globalProperties.$apiUrl = 'http://192.168.10.80/api';
+
+app.use(router);
+
+app.mount('#app');
+
