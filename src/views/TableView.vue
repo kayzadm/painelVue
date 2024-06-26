@@ -168,6 +168,7 @@ export default {
   },
 
   mounted() {
+    document.title = 'TABELA'
     this.fetchData();
   },
 };

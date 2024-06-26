@@ -264,6 +264,7 @@ export default {
     },
   },
   mounted() {
+    document.title = 'CRIAR'
     this.buscarCategorias();
     this.buscarCursos();
   },

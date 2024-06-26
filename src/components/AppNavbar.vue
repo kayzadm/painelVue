@@ -134,7 +134,7 @@ export default {
           });
       } else {
         this.$router.push({ name: 'login' });
-        // this.deleteTokenCookie()
+        this.deleteTokenCookie()  
       }
     },
     getTokenCookie() {

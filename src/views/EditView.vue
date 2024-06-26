@@ -298,6 +298,7 @@ export default {
     }
   },
   mounted() {
+    document.title = 'EDITAR'
     this.buscarCategoriasEdit();
     this.buscarCursosEdit();
     this.buscarLessonsEdit();

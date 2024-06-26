@@ -135,6 +135,7 @@ export default {
     }
   },
   mounted() {
+    document.title = 'LOGIN'
     var apiUrl = this.$apiUrl;
     const token = this.getTokenCookie();
     if (token) {
